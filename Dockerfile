@@ -1,6 +1,6 @@
 ARG GO_VERSION=1.24
 
-# Build
+# Buildl
 FROM golang:${GO_VERSION}-alpine AS build
 WORKDIR /service
 COPY ./go.mod ./go.sum ./

@@ -1,0 +1,130 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: totem-pedidos-app
+  namespace: totem-pedidos
+  labels:
+    app: totem-pedidos
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: totem-pedidos
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 2
+  template:
+    metadata:
+      labels:
+        app: totem-pedidos
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        fsGroup: 65532
+      containers:
+      - name: totem-pedidos
+        image: totem-pedidos:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              name: totem-pedidos-config
+              key: PORT
+        - name: DB_DRIVER
+          valueFrom:
+            configMapKeyRef:
+              name: totem-pedidos-config
+              key: DB_DRIVER
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: totem-pedidos-config
+              key: DB_HOST
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: totem-pedidos-config
+              key: DB_NAME
+        - name: DB_OPTIONS
+          valueFrom:
+            configMapKeyRef:
+              name: totem-pedidos-config
+              key: DB_OPTIONS
+        - name: PROFILE
+          valueFrom:
+            configMapKeyRef:
+              name: totem-pedidos-config
+              key: PROFILE
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: totem-pedidos-secret
+              key: DB_USER
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: totem-pedidos-secret
+              key: DB_PASS
+        - name: MP_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: totem-pedidos-secret
+              key: MP_TOKEN
+        - name: MP_USER_ID
+          valueFrom:
+            secretKeyRef:
+              name: totem-pedidos-secret
+              key: MP_USER_ID
+        - name: MP_EXTERNAL_POS_ID
+          valueFrom:
+            secretKeyRef:
+              name: totem-pedidos-secret
+              key: MP_EXTERNAL_POS_ID
+        - name: MP_WEBHOOK_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: totem-pedidos-secret
+              key: MP_WEBHOOK_SECRET
+        - name: MP_NOTIFICATION_URL
+          valueFrom:
+            secretKeyRef:
+              name: totem-pedidos-secret
+              key: MP_NOTIFICATION_URL
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 65532
+          capabilities:
+            drop:
+            - ALL
