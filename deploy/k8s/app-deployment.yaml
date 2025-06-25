@@ -27,7 +27,7 @@ spec:
       containers:
       - name: totem-pedidos
         image: totem-pedidos:latest
-        imagePullPolicy: Always
+        imagePullPolicy: Never
         ports:
         - containerPort: 8080
           name: http
