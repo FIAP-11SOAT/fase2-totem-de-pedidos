@@ -59,3 +59,8 @@ docs-compile-watch:
 
 docs-preview:
 	cd docs && npm run preview
+
+
+# port foward example
+port-foward:
+	kubectl port-forward -n <pod_name_goes_here> 8080:8080
