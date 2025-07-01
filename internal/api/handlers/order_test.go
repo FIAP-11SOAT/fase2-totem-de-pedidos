@@ -10,9 +10,9 @@ import (
 	"testing"
 
 	"github.com/FIAP-11SOAT/totem-de-pedidos/internal/api/handlers"
-	"github.com/FIAP-11SOAT/totem-de-pedidos/internal/core/domain/entity"
-	"github.com/FIAP-11SOAT/totem-de-pedidos/internal/core/domain/usecase/mock"
-	"github.com/FIAP-11SOAT/totem-de-pedidos/internal/core/ports/input"
+	"github.com/FIAP-11SOAT/totem-de-pedidos/internal/domain/entity"
+	"github.com/FIAP-11SOAT/totem-de-pedidos/internal/ports/input"
+	"github.com/FIAP-11SOAT/totem-de-pedidos/internal/usecase/mock"
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
@@ -27,8 +27,9 @@ func TestCreateOrderHandler(t *testing.T) {
 
 		handler := handlers.NewOrderHandler(mockService)
 
+		var cId int = 1
 		body := input.OrderInput{
-			CustomerID: 1,
+			CustomerID: &cId,
 			Items: []input.OrderItemInput{
 				{ProductID: 1, Quantity: 2},
 			},
@@ -77,8 +78,9 @@ func TestCreateOrderHandler(t *testing.T) {
 
 		handler := handlers.NewOrderHandler(mockService)
 
+		var cId int = 1
 		body := input.OrderInput{
-			CustomerID: 1,
+			CustomerID: &cId,
 			Items: []input.OrderItemInput{
 				{ProductID: 1, Quantity: 2},
 			},
@@ -184,9 +186,10 @@ func TestGetOrderByIdHandler(t *testing.T) {
 
 		mockService := mock.NewOrderServiceMock()
 		mockService.GetOrderByIDFunc = func(id int) (entity.Order, error) {
+			var cId int = 1
 			return entity.Order{
 				ID:          id,
-				CustomerID:  1,
+				CustomerID:  &cId,
 				Status:      "PENDING",
 				TotalAmount: 50.0,
 				Items: []entity.OrderItem{
@@ -258,9 +261,11 @@ func TestGetOrdersHandler(t *testing.T) {
 
 		mockService := mock.NewOrderServiceMock()
 		mockService.ListOrdersFunc = func(input.OrderFilterInput) ([]entity.Order, error) {
+			var custumer1 int = 1
+			var customer2 int = 2
 			return []entity.Order{
-				{ID: 1, Status: "PENDING", CustomerID: 1},
-				{ID: 2, Status: "PENDING", CustomerID: 2},
+				{ID: 1, Status: "PENDING", CustomerID: &custumer1},
+				{ID: 2, Status: "PENDING", CustomerID: &customer2},
 			}, nil
 		}
 

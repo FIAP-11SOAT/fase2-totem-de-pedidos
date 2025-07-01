@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/FIAP-11SOAT/totem-de-pedidos/internal/api/handlers"
-	"github.com/FIAP-11SOAT/totem-de-pedidos/internal/core/domain/entity"
-	"github.com/FIAP-11SOAT/totem-de-pedidos/internal/core/ports/usecase"
+	"github.com/FIAP-11SOAT/totem-de-pedidos/internal/domain/entity"
+	"github.com/FIAP-11SOAT/totem-de-pedidos/internal/ports/usecase"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -114,5 +114,5 @@ func TestIdentifyCustomer_NotFound(t *testing.T) {
 	err := handler.IdentifyCustomer(c)
 
 	assert.NoError(t, err)
-	assert.Equal(t, http.StatusNoContent, rec.Code)
+	assert.Equal(t, http.StatusNotFound, rec.Code)
 }
