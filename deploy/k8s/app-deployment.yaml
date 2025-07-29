@@ -24,79 +24,65 @@ spec:
         runAsNonRoot: true
         runAsUser: 65532
         fsGroup: 65532
+      initContainers:
+        - name: init-db
+          image: postgres:16-alpine
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -e;
+              sleep 5;
+              echo "Running database migration...";
+              echo $DB_PASS;
+              PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d $DB_NAME -p $DB_PORT -f /tmp/migration.sql;
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: totem-pedidos-config
+                  key: DB_HOST
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: totem-pedidos-secret
+                  key: DB_USER
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: totem-pedidos-config
+                  key: DB_NAME
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: totem-pedidos-config
+                  key: DB_PORT
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: totem-pedidos-secret
+                  key: DB_PASS
+          volumeMounts:
+          - name: migration-sql
+            mountPath: /tmp
+      volumes:
+        - name: migration-sql
+          configMap:
+            name: totem-pedidos-config
+            items:
+            - key: migration.sql
+              path: migration.sql
       containers:
       - name: totem-pedidos
         image: totem-pedidos:latest
-        imagePullPolicy: Always
+        imagePullPolicy: Never
         ports:
         - containerPort: 8080
           name: http
-        env:
-        - name: PORT
-          valueFrom:
-            configMapKeyRef:
-              name: totem-pedidos-config
-              key: PORT
-        - name: DB_DRIVER
-          valueFrom:
-            configMapKeyRef:
-              name: totem-pedidos-config
-              key: DB_DRIVER
-        - name: DB_HOST
-          valueFrom:
-            configMapKeyRef:
-              name: totem-pedidos-config
-              key: DB_HOST
-        - name: DB_NAME
-          valueFrom:
-            configMapKeyRef:
-              name: totem-pedidos-config
-              key: DB_NAME
-        - name: DB_OPTIONS
-          valueFrom:
-            configMapKeyRef:
-              name: totem-pedidos-config
-              key: DB_OPTIONS
-        - name: PROFILE
-          valueFrom:
-            configMapKeyRef:
-              name: totem-pedidos-config
-              key: PROFILE
-        - name: DB_USER
-          valueFrom:
-            secretKeyRef:
-              name: totem-pedidos-secret
-              key: DB_USER
-        - name: DB_PASS
-          valueFrom:
-            secretKeyRef:
-              name: totem-pedidos-secret
-              key: DB_PASS
-        - name: MP_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: totem-pedidos-secret
-              key: MP_TOKEN
-        - name: MP_USER_ID
-          valueFrom:
-            secretKeyRef:
-              name: totem-pedidos-secret
-              key: MP_USER_ID
-        - name: MP_EXTERNAL_POS_ID
-          valueFrom:
-            secretKeyRef:
-              name: totem-pedidos-secret
-              key: MP_EXTERNAL_POS_ID
-        - name: MP_WEBHOOK_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: totem-pedidos-secret
-              key: MP_WEBHOOK_SECRET
-        - name: MP_NOTIFICATION_URL
-          valueFrom:
-            secretKeyRef:
-              name: totem-pedidos-secret
-              key: MP_NOTIFICATION_URL
+        envFrom:
+        - configMapRef:
+            name: totem-pedidos-config
+        - secretRef:
+            name: totem-pedidos-secret
         livenessProbe:
           httpGet:
             path: /health

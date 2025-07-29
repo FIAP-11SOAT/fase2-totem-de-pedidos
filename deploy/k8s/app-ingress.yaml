@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: totem-pedidos-ingress
+  namespace: totem-pedidos
+  labels:
+    app: totem-pedidos
+  annotations:
+    ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+  - host: totem-pedidos.localhost
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: totem-pedidos-service
+            port:
+              number: 80

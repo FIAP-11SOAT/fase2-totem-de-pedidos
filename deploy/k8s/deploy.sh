@@ -22,8 +22,8 @@ fi
 echo "✅ Kubernetes cluster connection verified"
 
 # Apply manifests in the correct order
-echo "📦 Creating namespace..."
-kubectl apply -f namespace.yaml
+# echo "📦 Creating namespace..."
+# kubectl apply -f namespace.yaml
 
 echo "🔧 Creating ConfigMaps..."
 kubectl apply -f configmap.yaml
