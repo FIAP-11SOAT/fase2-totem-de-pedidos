@@ -6,8 +6,8 @@ create table
         tax_id varchar(50) not null,
         created_at timestamp default current_timestamp,
         updated_at timestamp default current_timestamp,
-        constraint "unique_email" unique ("email"),
-        constraint "unique_tax_id" unique ("tax_id")
+        constraint "customers_unique_email" unique ("email"),
+        constraint "customers_unique_tax_id" unique ("tax_id")
     );
 
 create table
@@ -40,7 +40,8 @@ create table
         name varchar(100) not null,
         description text,
         created_at timestamp default current_timestamp,
-        updated_at timestamp default current_timestamp
+        updated_at timestamp default current_timestamp,
+        constraint "product_categories_unique_name" unique ("name")
     );
 
 create table
@@ -53,7 +54,8 @@ create table
         preparation_time integer not null,
         created_at timestamp default current_timestamp,
         updated_at timestamp default current_timestamp,
-        category_id integer references product_categories (id) on delete cascade
+        category_id integer references product_categories (id) on delete cascade,
+      	constraint "products_unique_name" unique ("name")
     );
 
 create table
@@ -67,10 +69,6 @@ create table
         product_id integer references products (id) on delete cascade
     );
 
-alter table customers add constraint unique_tax_id unique (tax_id);
-alter table product_categories add constraint unique_category_name unique (name);
-alter table products add constraint unique_product_name unique (name);
-
 insert into customers (name, email, tax_id)
 values ('João Silva', 'joao.silva@email.com', '90103576002')
 on CONFLICT (tax_id) DO NOTHING;
@@ -80,7 +78,7 @@ insert into product_categories (name, description) values
 ('Acompanhamento', 'Batatas, saladas e outros acompanhamentos'),
 ('Bebida', 'Refrigerantes, sucos e outras bebidas'),
 ('Sobremesa', 'Doces e sobremesas')
-on CONFLICT (name) DO NOTHING;
+on CONFLICT ("name") DO NOTHING;
 
 insert into products (name, description, price, image_url, preparation_time, category_id) values
 ('Hambúrguer Clássico', 'Pão, carne, queijo, alface e tomate', 18.90, 'https://images.unsplash.com/photo-1550547660-d9450f859349', 15, 1),
@@ -91,4 +89,4 @@ insert into products (name, description, price, image_url, preparation_time, cat
 ('Suco Natural', 'Suco de laranja ou limão', 7.50, 'https://images.unsplash.com/photo-1600271886742-f049cd451bba', 3, 3),
 ('Sorvete', 'sorvete', 14.00, 'https://images.unsplash.com/photo-1497034825429-c343d7c6a68f', 7, 4),
 ('Petit Gateau', 'Bolo de chocolate com recheio cremoso e sorvete', 16.00, 'https://t4.ftcdn.net/jpg/02/21/31/01/240_F_221310131_cUVS5tnUMG1qv3GWzzj8w2bgDUtLSmRv.jpg', 10, 4)
-on CONFLICT (name) DO NOTHING;
+on CONFLICT ("name") DO NOTHING;
