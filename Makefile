@@ -64,3 +64,7 @@ docs-preview:
 # port foward example
 port-foward:
 	kubectl port-forward -n <pod_name_goes_here> 8080:8080
+
+
+stress:
+	go tool hey -z 5m -c 500 http://totem-pedidos.localhost/health
