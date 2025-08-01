@@ -23,13 +23,13 @@ echo "✅ Kubernetes cluster connection verified"
 
 # Apply manifests in the correct order
 # echo "📦 Creating namespace..."
-# kubectl apply -f namespace.yaml
+# kubectl apply -f app-namespace.yaml
 
 echo "🔧 Creating ConfigMaps..."
-kubectl apply -f configmap.yaml
+kubectl apply -f app-configmap.yaml
 
 echo "🔐 Creating Secrets..."
-kubectl apply -f secret.yaml
+kubectl apply -f app-secret.yaml
 
 echo "🚀 Deploying application..."
 kubectl apply -f app-deployment.yaml
@@ -39,10 +39,10 @@ echo "⏳ Waiting for application to be ready..."
 kubectl wait --for=condition=Available deployment/totem-pedidos-app -n totem-pedidos --timeout=300s
 
 echo "🌐 Creating Ingress..."
-kubectl apply -f ingress.yaml
+kubectl apply -f app-ingress.yaml
 
 echo "📊 Creating HPA..."
-kubectl apply -f hpa.yaml
+kubectl apply -f app-hpa.yaml
 
 echo ""
 echo "✅ Deployment completed successfully!"
